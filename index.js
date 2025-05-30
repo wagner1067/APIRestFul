@@ -2,13 +2,7 @@ import http from "http";
 import { v4 } from "uuid";
 
 const port = 3000;
-const grades = [
-  {
-    studentName: "Wagner",
-    subject: "Matemática",
-    grade: 8.5,
-  },
-];
+const grades = [];
 
 const server = http.createServer((req, res) => {
   //Função do backend
@@ -19,6 +13,8 @@ const server = http.createServer((req, res) => {
   });
 
   req.on("end", () => {
+    const id = url.split("/")[2];
+
     if (url === "/grades" && method === "GET") {
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(grades));
@@ -33,6 +29,19 @@ const server = http.createServer((req, res) => {
       grades.push(newGrade);
       res.writeHead(201, { "Content-Type": "application/json" });
       res.end(JSON.stringify(newGrade));
+    } else if (url === `/grades/${id}` && method === "PUT") {
+      const { studentName, subject, grade } = JSON.parse(body);
+      const gradeToUpdate = grades.find((g) => g.id === id);
+      if (gradeToUpdate) {
+        gradeToUpdate.studentName = studentName;
+        gradeToUpdate.subject = subject;
+        gradeToUpdate.grade = grade;
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(gradeToUpdate));
+      } else {
+        res.writeHead(404, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Nota não encontrada" }));
+      }
     } else {
       res.writeHead(404, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: "Rota não encontrada" }));
