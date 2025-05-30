@@ -42,6 +42,16 @@ const server = http.createServer((req, res) => {
         res.writeHead(404, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ error: "Nota não encontrada" }));
       }
+    } else if (url === `/grades/${id}` && method === "DELETE") {
+      const index = grades.findIndex((g) => g.id === id);
+      if (index !== -1) {
+        grades.splice(index, 1);
+        res.writeHead(204);
+        res.end();
+      } else {
+        res.writeHead(404, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Nota não encontrada" }));
+      }
     } else {
       res.writeHead(404, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: "Rota não encontrada" }));
